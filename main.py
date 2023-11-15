@@ -10,6 +10,7 @@ import pymunk.pygame_util
 import random
 from time import sleep
 
+from gobject import *
 from gresource import *
 
 TITLE_STR = "Test PyMunk"
@@ -20,7 +21,7 @@ INFO_FONT = 14
 
 def draw_info() :
     font = pygame.font.SysFont('Verdana', INFO_FONT)
-    info = font.render('F1/F2 : Load/Save field file    space : toggle', True, COLOR_BLACK)
+    info = font.render('F1/F2 : Load/Save file    space : toggle', True, COLOR_BLACK)
 
     pygame.draw.rect(gctrl.surface, COLOR_PURPLE, (0, gctrl.height - INFO_HEIGHT, gctrl.width, INFO_HEIGHT))
     gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - 2 * INFO_FONT - INFO_OFFSET)) 
@@ -38,7 +39,7 @@ def draw_message(str) :
 def terminate() :
     pygame.quit()
     sys.exit()
-      
+
 def test() :
     global clock
 
@@ -56,14 +57,6 @@ def test() :
 
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
-    '''
-    static =[
-                pymunk.Segment(space.static_body, (-5, 0), (-5, 650), 5),
-                pymunk.Segment(space.static_body, (-5, 650), (650, 650), 5),
-                pymunk.Segment(space.static_body, (650, 650), (650, -5), 5),
-                pymunk.Segment(space.static_body, (-5, -5), (650, -5), 5),
-            ]
-    '''
     boarder_width = 5
     sx = 0 - boarder_width
     sy = 0 - boarder_width
@@ -73,9 +66,10 @@ def test() :
                 pymunk.Segment(space.static_body, (sx, sy), (sx, ey), boarder_width),
                 pymunk.Segment(space.static_body, (sx, ey), (ex, ey), boarder_width),
                 pymunk.Segment(space.static_body, (ex, ey), (ex, sy), boarder_width),
-                pymunk.Segment(space.static_body, (sx, sy), (ex, sy), boarder_width),
-                pymunk.Segment(space.static_body, (sx+100, sy+80), (ex-100, ey-80), boarder_width),
+                pymunk.Segment(space.static_body, (sx, sy), (ex, sy), boarder_width)
             ]
+    
+    static.append(pymunk.Segment(space.static_body, (sx+100, sy+80), (ex-100, ey-80), boarder_width))
 
     for s in static:
         s.collision_type = 1
@@ -95,22 +89,15 @@ def test() :
             if event.type == pygame.MOUSEBUTTONUP :
                 mouse_pos = pygame.mouse.get_pos()
 
-                body = pymunk.Body(1, 1666)
-                body.position = mouse_pos
-
                 if l_button == True :
-                    shape = pymunk.Poly.create_box(body, (20, 20))
+                    object = retangle_object(mouse_pos)
+                    space.add(object.body, object.shape)
                 elif r_button :
-                    shape = pymunk.Circle(body, 10)
-                    shape.elasticity = .9
+                    object = circle_object(mouse_pos)
+                    space.add(object.body, object.shape)
                 elif wheel :
-                    vertices = [(0, 0), (30, 0), (15, 30)]
-                    shape = pymunk.Poly(body, vertices)
-                    shape.friction = 0.5
-                    shape.collision_type = 1
-                    shape.density = 0.1
-
-                space.add(body, shape)
+                    object = triangle_object(mouse_pos)
+                    space.add(object.body, object.shape)
 
         gctrl.surface.fill(COLOR_BLACK)
 
