@@ -101,6 +101,11 @@ def test_gravity() :
 
     pygame.quit()
 
+def coll_begin(arbiter, space, data) :
+    print('begin :', arbiter.shapes[0].body.position)
+    
+    return True
+
 def test_ball() :
     global clock
 
@@ -115,12 +120,15 @@ def test_ball() :
     
     walls = []
     walls.append(wall((sx, sy), (sx, ey)))
-    walls.append(wall((sx, ey), (ex, ey)))
+    walls.append(wall((sx, ey), (ex, ey), 2))
     walls.append(wall((ex, ey), (ex, sy)))
-    walls.append(wall((sx, sy), (ex, sy)))
+    walls.append(wall((sx, sy), (ex, sy), 2))
 
     for object in walls :
         space.add(object.body, object.shape)
+
+    coll_handler = space.add_collision_handler(1, 2)
+    coll_handler.begin = coll_begin
 
     timeStep = 1.0 / 60
 
@@ -167,5 +175,5 @@ def init_test() :
 if __name__ == '__main__' :
     init_test()
 
-    test_gravity()
-    #test_ball()
+    #test_gravity()
+    test_ball()
