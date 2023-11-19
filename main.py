@@ -49,10 +49,10 @@ def test_gravity() :
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
     boarder_width = 5
-    sx = 0 - boarder_width
-    sy = 0 - boarder_width
-    ex = gctrl.width + boarder_width
-    ey = gctrl.height + boarder_width
+    sx = 0 + boarder_width
+    sy = 0 + boarder_width
+    ex = gctrl.width - boarder_width
+    ey = gctrl.height - boarder_width
     static =[
                 pymunk.Segment(space.static_body, (sx, sy), (sx, ey), boarder_width),
                 pymunk.Segment(space.static_body, (sx, ey), (ex, ey), boarder_width),
@@ -108,22 +108,19 @@ def test_ball() :
 
     draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
 
-    boarder_width = 5
-    sx = 0 - boarder_width
-    sy = 0 - boarder_width
-    ex = gctrl.width + boarder_width
-    ey = gctrl.height + boarder_width
-    static =[
-                pymunk.Segment(space.static_body, (sx, sy), (sx, ey), boarder_width),
-                pymunk.Segment(space.static_body, (sx, ey), (ex, ey), boarder_width),
-                pymunk.Segment(space.static_body, (ex, ey), (ex, sy), boarder_width),
-                pymunk.Segment(space.static_body, (sx, sy), (ex, sy), boarder_width)
-            ]
+    sx = 5
+    sy = 5
+    ex = gctrl.width - 5
+    ey = gctrl.height -5
+    
+    walls = []
+    walls.append(wall((sx, sy), (sx, ey)))
+    walls.append(wall((sx, ey), (ex, ey)))
+    walls.append(wall((ex, ey), (ex, sy)))
+    walls.append(wall((sx, sy), (ex, sy)))
 
-    for s in static:
-        s.elasticity = 1
-        s.collision_type = 1
-    space.add(*static)
+    for object in walls :
+        space.add(object.body, object.shape)
 
     timeStep = 1.0 / 60
 
@@ -169,6 +166,6 @@ def init_test() :
 
 if __name__ == '__main__' :
     init_test()
-    
-    #test_gravity()
-    test_ball()
+
+    test_gravity()
+    #test_ball()

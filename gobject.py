@@ -42,5 +42,12 @@ class ball :
     def set_velociy(self, vel_x, vel_y) :
         self.body.velocity = (vel_x, vel_y)
 
+class wall :
+    def __init__(self, pos1, pos2, radius = 2) :
+        self.body = pymunk.Body(body_type = pymunk.Body.STATIC)
+        self.shape = pymunk.Segment(self.body, pos1, pos2, radius)
+        self.shape.elasticity = 1
+        self.shape.collision_type = 1
+
 if __name__ == '__main__' :
     print('pymunk object')
