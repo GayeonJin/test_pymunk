@@ -30,14 +30,19 @@ class triangle_object :
         self.shape.density = 0.1
 
 class ball :
-    def __init__(self, pos, radius = 10) :
-        self.body = pymunk.Body()
+    def __init__(self, pos, mass = 10, radius = 10) :
+        inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
+        self.body = pymunk.Body(mass, inertia)
         self.body.position = pos
 
         self.shape = pymunk.Circle(self.body, radius)
         self.shape.density = 1
         self.shape.elasticity = 1
         self.shape.collision_type = 1
+
+    def set_elasticity(self, elasticity, friction) :
+        self.shape.elasticity = elasticity
+        self.shape.friction = friction
 
     def set_velociy(self, vel_x, vel_y) :
         self.body.velocity = (vel_x, vel_y)

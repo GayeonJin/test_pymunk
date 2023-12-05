@@ -19,6 +19,8 @@ INFO_HEIGHT = 40
 INFO_OFFSET = 10
 INFO_FONT = 14
 
+FPS = 60
+
 def draw_info() :
     font = pygame.font.SysFont('Verdana', INFO_FONT)
     info = font.render('F1/F2 : Load/Save file    space : toggle', True, COLOR_BLACK)
@@ -66,7 +68,7 @@ def test_gravity() :
         s.collision_type = 1
     space.add(*static)
 
-    timeStep = 1.0 / 60
+    timeStep = 1.0 / FPS
 
     running = True
     while running:
@@ -97,7 +99,7 @@ def test_gravity() :
         space.step(timeStep)
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(FPS)
 
     pygame.quit()
 
@@ -130,7 +132,7 @@ def test_ball() :
     coll_handler = space.add_collision_handler(1, 2)
     coll_handler.begin = coll_begin
 
-    timeStep = 1.0 / 60
+    timeStep = 1.0 / FPS
 
     running = True
     while running:
@@ -156,7 +158,62 @@ def test_ball() :
         space.step(timeStep)
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(FPS)
+
+    pygame.quit()
+
+def test_bounce() :
+    global clock
+
+    space = pymunk.Space()
+    space.gravity = 0, 980
+
+    draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
+
+    sx = 5
+    sy = 5
+    ex = gctrl.width - 5
+    ey = gctrl.height -5
+    
+    walls = []
+    walls.append(wall((sx, sy), (sx, ey)))
+    walls.append(wall((sx, ey), (ex, ey), 2))
+    walls.append(wall((ex, ey), (ex, sy)))
+    walls.append(wall((sx, sy), (ex, sy), 2))
+
+    for object in walls :
+        space.add(object.body, object.shape)
+
+    center_x = gctrl.width / 2
+    center_y = gctrl.height / 2
+
+    object = ball((center_x, 20))
+    object.set_elasticity(0.95, 0.1)
+    #object.set_velociy(100, -100)
+    space.add(object.body, object.shape)
+
+    timeStep = 1.0 / FPS
+
+    running = True
+    while running:
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                running = False
+                continue
+
+            if event.type == pygame.MOUSEBUTTONDOWN :
+                l_button, wheel, r_button = pygame.mouse.get_pressed()
+            if event.type == pygame.MOUSEBUTTONUP :
+                mouse_pos = pygame.mouse.get_pos()
+
+        gctrl.surface.fill(COLOR_BLACK)
+
+        space.debug_draw(draw_options)
+
+        space.step(timeStep)
+
+        pygame.display.flip()
+        clock.tick(FPS)
 
     pygame.quit()
 
@@ -176,4 +233,5 @@ if __name__ == '__main__' :
     init_test()
 
     #test_gravity()
-    test_ball()
+    #test_ball()
+    test_bounce()
