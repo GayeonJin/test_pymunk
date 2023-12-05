@@ -15,29 +15,6 @@ from gresource import *
 
 TITLE_STR = "Test PyMunk"
 
-INFO_HEIGHT = 40
-INFO_OFFSET = 10
-INFO_FONT = 14
-
-FPS = 60
-
-def draw_info() :
-    font = pygame.font.SysFont('Verdana', INFO_FONT)
-    info = font.render('F1/F2 : Load/Save file    space : toggle', True, COLOR_BLACK)
-
-    pygame.draw.rect(gctrl.surface, COLOR_PURPLE, (0, gctrl.height - INFO_HEIGHT, gctrl.width, INFO_HEIGHT))
-    gctrl.surface.blit(info, (INFO_OFFSET * 2, gctrl.height - 2 * INFO_FONT - INFO_OFFSET)) 
-
-def draw_message(str) :
-    font = pygame.font.Font('freesansbold.ttf', 40)
-    text_suf = font.render(str, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
-
-    gctrl.surface.blit(text_suf, text_rect)
-    pygame.display.update()
-    sleep(2)
-
 def terminate() :
     pygame.quit()
     sys.exit()

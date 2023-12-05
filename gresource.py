@@ -12,6 +12,8 @@ COLOR_PURPLE = (100,100,200)
 
 resource_path = ''
 
+FPS = 60
+
 class game_ctrl :
     def __init__(self) :
         self.surface = None 
