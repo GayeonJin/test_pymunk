@@ -80,11 +80,6 @@ def test_gravity() :
 
     pygame.quit()
 
-def coll_begin(arbiter, space, data) :
-    print('begin :', arbiter.shapes[0].body.position)
-    
-    return True
-
 def test_ball() :
     global clock
 
@@ -106,8 +101,77 @@ def test_ball() :
     for object in walls :
         space.add(object.body, object.shape)
 
+    def coll_begin(arbiter, space, data) :
+        print('begin :', arbiter.shapes[0].body.position)
+    
+        return True
+
     coll_handler = space.add_collision_handler(1, 2)
     coll_handler.begin = coll_begin
+
+    timeStep = 1.0 / FPS
+
+    running = True
+    while running:
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                running = False
+                continue
+
+            if event.type == pygame.MOUSEBUTTONDOWN :
+                l_button, wheel, r_button = pygame.mouse.get_pressed()
+            if event.type == pygame.MOUSEBUTTONUP :
+                mouse_pos = pygame.mouse.get_pos()
+
+                if l_button == True :
+                    object = ball(mouse_pos)
+                    object.set_velociy(400, -300)
+                    space.add(object.body, object.shape)
+
+        gctrl.surface.fill(COLOR_BLACK)
+
+        space.debug_draw(draw_options)
+
+        space.step(timeStep)
+
+        pygame.display.flip()
+        clock.tick(FPS)
+
+    pygame.quit()
+
+def test_split() :
+    global clock
+
+    space = pymunk.Space()
+
+    draw_options = pymunk.pygame_util.DrawOptions(gctrl.surface)
+
+    sx = 5
+    sy = 5
+    ex = gctrl.width - 5
+    ey = gctrl.height -5
+    
+    walls = []
+    walls.append(wall((sx, sy), (sx, ey), 2))
+    walls.append(wall((sx, ey), (ex, ey), 2))
+    walls.append(wall((ex, ey), (ex, sy), 2))
+    walls.append(wall((sx, sy), (ex, sy), 2))
+
+    for object in walls :
+        space.add(object.body, object.shape)
+
+    def coll_separate(arbiter, space, data) :
+        pos = arbiter.shapes[0].body.position
+        vel = arbiter.shapes[0].body.velocity
+
+        object = ball(pos)
+        object.set_velociy(vel[0] / 2, vel[1] / 2)
+        space.add(object.body, object.shape)
+
+        return True
+
+    coll_handler = space.add_collision_handler(1, 2)
+    coll_handler.separate = coll_separate
 
     timeStep = 1.0 / FPS
 
@@ -211,4 +275,5 @@ if __name__ == '__main__' :
 
     #test_gravity()
     #test_ball()
-    test_bounce()
+    test_split()
+    #test_bounce()
